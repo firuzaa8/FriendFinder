@@ -1,20 +1,20 @@
 var server = require("../../server.js")
 var path = require("path");
 var mysql = require("mysql");
+var CLEARDB_DATABASE_URL = process.env.CLEARDB_DATABASE_URL || "";
 
-var connection = mysql.createConnection({
-    host: "localhost",
-
-
-    port: 3306,
-
-
-    user: "root",
-
-
-    password: "",
-    database: "friendFinder_db"
-});
+var connection;
+if (CLEARDB_DATABASE_URL == "") {
+    connection = mysql.createConnection({
+        host: "localhost",
+        port: 3306,
+        user: "root",
+        password: "",
+        database: "friendFinder_db"
+    });
+} else {
+    connection = mysql.createConnection(CLEARDB_DATABASE_URL);
+}
 
 connection.connect(function (err) {
     if (err) throw err;
