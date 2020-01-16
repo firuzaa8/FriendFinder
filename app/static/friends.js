@@ -1,5 +1,5 @@
 $(document).ready(function () {
-
+    $("#match").hide();
     function checkForm() {
         var canSubmit = true;
         if ($("#fullname").val() == "" || $("#image").val() == "") {
@@ -25,6 +25,8 @@ $(document).ready(function () {
     });
 
     $("#submit").on("click", function (event) {
+        $("#surveyform").hide();
+
         event.preventDefault();
 
         var answerArray = { name: "", photo: "", scores: [] };
@@ -56,7 +58,15 @@ $(document).ready(function () {
             url: url,
             data: form.serialize(),
             success: function (data) {
-                console.log(data);
+                for (i = 0; i < data.length; i++) {
+                    var card = $("<div class='card' style='width: 18rem;'>");
+                    var cardbody = $("<div class='card-body'>");
+                    cardbody.append($("<h5 class='card-title'>You are a match with " + data[i].name + "</h5>"));
+                    cardbody.append($("<p class='card-text'>Your match score is " + data[i].score + "</p>"));
+                    card.append(cardbody);
+                    $("#match").append(card);
+                }
+                $("#match").show();
             }
 
 

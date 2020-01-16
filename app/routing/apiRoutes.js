@@ -3,23 +3,22 @@ var path = require("path");
 var mysql = require("mysql");
 
 var connection = mysql.createConnection({
-  host: "localhost",
+    host: "localhost",
 
-  // Your port; if not 3306
-  port: 3306,
 
-  // Your username
-  user: "root",
+    port: 3306,
 
-  // Your password
-  password: "",
-  database: "friendFinder_db"
+
+    user: "root",
+
+
+    password: "",
+    database: "friendFinder_db"
 });
 
-connection.connect(function(err) {
-  if (err) throw err;
+connection.connect(function (err) {
+    if (err) throw err;
 });
-
 
 server.app.post("/api/addprofile", function (req, res) {
     console.log(req.body);
@@ -38,13 +37,47 @@ server.app.post("/api/addprofile", function (req, res) {
             score8: req.body.q8,
             score9: req.body.q9,
             score10: req.body.q10,
-
-
         },
-        function (err) {
+        function (err, insertRes) {
             if (err) throw err;
-            return res.json({ "status": "ok" })
+
+            var query = connection.query(
+                "SELECT * FROM profiles WHERE id != " + insertRes.insertId,
+                function (err, queryRes) {
+                    if (err) throw err;
+                    var matches = [];
+                    for (i = 0; i < queryRes.length; i++) {
+                        var score = 0;
+
+                        score += Math.abs(req.body.q1 - queryRes[i].score1);
+                        score += Math.abs(req.body.q2 - queryRes[i].score2);
+                        score += Math.abs(req.body.q3 - queryRes[i].score3);
+                        score += Math.abs(req.body.q4 - queryRes[i].score4);
+                        score += Math.abs(req.body.q5 - queryRes[i].score5);
+                        score += Math.abs(req.body.q6 - queryRes[i].score6);
+                        score += Math.abs(req.body.q7 - queryRes[i].score7);
+                        score += Math.abs(req.body.q8 - queryRes[i].score8);
+                        score += Math.abs(req.body.q9 - queryRes[i].score9);
+                        score += Math.abs(req.body.q10 - queryRes[i].score10);
+
+                        var matchScore = (100 - (score * 2.5));
+                        if (matchScore >= 70) {
+                            var match = {
+                                name: queryRes[i].name,
+                                image: queryRes[i].photos,
+                                score: matchScore
+
+                            };
+                            matches.push(match);
+                        }
+
+                    }
+
+                    return res.json(matches);
+                });
         });
-
-
 });
+
+
+
+
