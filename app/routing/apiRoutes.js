@@ -12,13 +12,12 @@ if (CLEARDB_DATABASE_URL == "") {
         password: "",
         database: "friendFinder_db"
     });
+    connection.connect(function (err) {
+        if (err) throw err;
+    });
 } else {
     connection = mysql.createPool(CLEARDB_DATABASE_URL);
 }
-
-connection.connect(function (err) {
-    if (err) throw err;
-});
 
 server.app.post("/api/addprofile", function (req, res) {
     console.log(req.body);
