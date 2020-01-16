@@ -13,7 +13,7 @@ if (CLEARDB_DATABASE_URL == "") {
         database: "friendFinder_db"
     });
 } else {
-    connection = mysql.createConnection(CLEARDB_DATABASE_URL);
+    connection = mysql.createPool(CLEARDB_DATABASE_URL);
 }
 
 connection.connect(function (err) {
